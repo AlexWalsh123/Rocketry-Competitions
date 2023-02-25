@@ -19,7 +19,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Defines title and location of multiple plots to be populated onto the display
 
-        self.plotPlace = [('logRX', 0, 0), ('logRY', 1, 0), ('logRZ', 1, 1)]
+        self.plotPlace = [('logRX', 0, 0), ('logRY', 1, 0),
+                          ('logRZ', 1, 1), ('Altitude', 1, 2)]
 
         # Defines intial data, Probably want to find a way to not initilise this as zero
         self.rocketData = {
@@ -27,7 +28,8 @@ class MainWindow(QtWidgets.QMainWindow):
             'logTime': [0],
             'logRX': [0],
             'logRY': [0],
-            'logRZ': [0]
+            'logRZ': [0],
+            'Altitude': [0]
 
         }
 
@@ -41,6 +43,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for i, (key, Row, Col) in enumerate(self.plotPlace):
             self.plots.append(PlotData(self.l, key, 'Time', key, Row, Col))
+
+        #Adds a label item to the window 
+
+        ##TODO Try and fix the formatting of this to align left and look a little better
+
+        self.labelTop = self.l.addLabel(row=0, col=1, rowspan=1, colspan=2)
+        self.labelTop.setText(
+            "<div style='text-align: left;'>Data</div>")
 
         # Starts window time and tells it how often to call data update function
         self.timer = QtCore.QTimer()
@@ -57,12 +67,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rocketData['logRX'].append(random.randint(0, 10))
         self.rocketData['logRY'].append(random.randint(0, 10))
         self.rocketData['logRZ'].append(random.randint(0, 10))
+        self.rocketData['Altitude'].append(random.randint(0, 10))
 
         # Update Plots to correct data using plot objects that exist in list
 
         for plot in self.plots:
             plot.data_line.setData(
                 self.rocketData['logTime'], self.rocketData.get(plot.title))
+
+        #Update Label Values
+
+        latestLogRX = "Rocket X position: %s" % self.rocketData['logRX'][-1]
+        latestLogRY = "Rocket Y position: %s" % self.rocketData['logRY'][-1]
+        latestLogRZ = "Rocket Z position: %s" % self.rocketData['logRZ'][-1]
+
+        text = ["========================================================",latestLogRX, latestLogRY, latestLogRZ,"========================================================"]
+
+        text = "<br>".join(text)
+
+        self.labelTop.setText(text)
 
 
 class DataIngest:
